@@ -1,23 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import GridItems from './Components/GridItems';
+import SidePanel from './Components/SidePanel';
 
-function App() {
+import './App.css'
+
+const App = () => {
+  
+  const [speed, setSpeed] = useState(800)
+  const [score, setScore] = useState(0)
+  const [history, setHistory] = useState([{player: 'hello', highscore: 1000 }])
+  const [name, setName] = useState()
+
+  // const onScore = () => {
+
+  // }
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='app' >
+      <SidePanel score={score} history={history} />
+      <div className='grid'>
+        <GridItems score={score} setScore={setScore} />
+      </div>
     </div>
   );
 }
