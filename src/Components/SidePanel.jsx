@@ -8,7 +8,7 @@ const SidePanel = ({score, history}) => {
             <div className='history'>
                 {history.map((h) => {
                     return (
-                        <div className='history-item'>
+                        <div key={h.player+h.highscore} className='history-item'>
                             <p>{h.player}</p>
                             <p>{h.highscore}</p>
                         </div>

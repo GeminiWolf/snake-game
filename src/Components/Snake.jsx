@@ -1,8 +1,9 @@
 import React from 'react';
 
-const Snake = ({show}) => {
+const Snake = ({head}) => {
     return (
-        <div className={'snake'}>
+        <div className={`snake ${head ? 'head' : null}`} >
+            {head && console.log('snale', head)}
         </div>
     );
 }

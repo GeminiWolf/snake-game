@@ -40,6 +40,10 @@
   border: 0.5px solid #000;
 }
 
+.head {
+  background-color: blue;
+}
+
 .snake {
   border-radius: 50%;
   width: 100%;

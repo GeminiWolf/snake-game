@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Food from './Food';
 import Snake from './Snake';
 
@@ -10,16 +10,15 @@ const GridItems = ({setScore, score}) => {
     const [food, setfood] = useState({rows: x, cols: y})
     const [snake, setSnake] = useState([snakeHead, {rows: 0, cols: 4}])
     const [direction, setDirection] = useState('right')
-    const [blocks, setBlocks] = useState({rows: 20,cols: 20})
+    const blocks = useRef({rows: 20,cols: 20})
     const [Grid, setGrid] = useState([])
-    const [speed, setSpeed] = useState(400)
-
+    const speed = useRef(400)
     const grid = []
 
     // block
     const renderGrid = () => {
-        for (let rows = 0; rows < blocks.rows; rows++) {
-            for (let cols = 0; cols < blocks.cols; cols++) {
+        for (let rows = 0; rows < blocks.current.rows; rows++) {
+            for (let cols = 0; cols < blocks.current.cols; cols++) {
                 grid.push({
                     rows,
                     cols,
@@ -62,7 +61,7 @@ const GridItems = ({setScore, score}) => {
         setGrid(grid)
     }
 
-    const movement = async() => {
+    const movement = () => {
         let tempHead = snakeHead
         let tempbod = snake
         let newbod = []
@@ -116,8 +115,8 @@ const GridItems = ({setScore, score}) => {
         if(food.cols === newHead.cols && food.rows === newHead.rows)
         {
             setScore(score + 100)
-            if(speed !== 50){
-                setSpeed(speed - 5)
+            if(speed.current !== 50){
+                speed.current -= 5
             }
             randFoodPos()
         }else{
@@ -144,14 +143,14 @@ const GridItems = ({setScore, score}) => {
     
     useEffect(() => {
         document.addEventListener('keydown', onKeys);
-        const interval = setInterval(() => movement(), speed)
+        const interval = setInterval(() => movement(), speed.current)
         return () => clearInterval(interval)
     }, [direction, snake])
 
     return Grid.map((block, i) => {
         return (
             <div key={i.toString()} className='grid-item'>
-                {snakeBody(block) ? <Snake  show={block}/> : null}
+                {snakeBody(block) ? <Snake head={block === snakeHead && true}/> : null}
                 {placeFood(block) ? <Food/> : null }
             </div>
         )
