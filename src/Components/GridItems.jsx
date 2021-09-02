@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Food from './Food';
 import Snake from './Snake';
 
@@ -8,9 +8,7 @@ let y = Math.floor((Math.random()*(19-1+1)+1)/2)*2
 const GridItems = ({setScore, score}) => {
     const [snakeHead, setSnakeHead] = useState({rows: 0, cols: 5})
     const [food, setfood] = useState({rows: x, cols: y})
-    const [start, setStart] = useState(true)
     const [snake, setSnake] = useState([snakeHead, {rows: 0, cols: 4}])
-    const [snakeLength, setSnakeLength] = useState(1)
     const [direction, setDirection] = useState('right')
     const [blocks, setBlocks] = useState({rows: 20,cols: 20})
     const [Grid, setGrid] = useState([])
@@ -118,7 +116,7 @@ const GridItems = ({setScore, score}) => {
         if(food.cols === newHead.cols && food.rows === newHead.rows)
         {
             setScore(score + 100)
-            if(speed != 50){
+            if(speed !== 50){
                 setSpeed(speed - 5)
             }
             randFoodPos()
@@ -128,6 +126,7 @@ const GridItems = ({setScore, score}) => {
         
         setSnakeHead(newHead)
         setSnake(newbod)
+        renders()
     }
 
     const onKeys = (e) => {
@@ -141,9 +140,9 @@ const GridItems = ({setScore, score}) => {
 
         setDirection(moves[e.keyCode])
     }
-        
+
+    
     useEffect(() => {
-        renders()
         document.addEventListener('keydown', onKeys);
         const interval = setInterval(() => movement(), speed)
         return () => clearInterval(interval)
