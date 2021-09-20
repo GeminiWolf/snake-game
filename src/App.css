@@ -36,17 +36,20 @@
   /* border: 1px solid gray; */
 }
 .grid-item {
-  background-color: red;
-  border: 0.5px solid #000;
+  background-color: #cdcdcd;
+  border: 0.5px solid #adadad81;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.head {
-  background-color: blue;
-}
-
 .snake {
   border-radius: 50%;
+  width: 80%;
+  height: 80%;
+  background-color: teal;
+}
+.head {
+  background-color: blue;
   width: 100%;
   height: 100%;
-  background-color: teal;
 }

@@ -1,15 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { render } from '@testing-library/react';
+import React, { useEffect, useRef, useState } from 'react';
 import Food from './Food';
 import Snake from './Snake';
 
 let x = Math.floor((Math.random()*(19-1+1)+1)/2)*2
 let y = Math.floor((Math.random()*(19-1+1)+1)/2)*2
+const startPos = {rows: 20/2 -1, cols: 20/2 -1}
 
 const GridItems = ({setScore, score}) => {
-    const [snakeHead, setSnakeHead] = useState({rows: 0, cols: 5})
+    const [snakeHead, setSnakeHead] = useState(startPos)
     const [food, setfood] = useState({rows: x, cols: y})
-    const [snake, setSnake] = useState([snakeHead, {rows: 0, cols: 4}])
-    const [direction, setDirection] = useState('right')
+    const [snake, setSnake] = useState([snakeHead])
+    const [direction, setDirection] = useState('')
     const blocks = useRef({rows: 20,cols: 20})
     const [Grid, setGrid] = useState([])
     const speed = useRef(400)
@@ -51,17 +53,29 @@ const GridItems = ({setScore, score}) => {
     }
 
     const randFoodPos = () =>{
-        let r = Math.floor((Math.random()*(19-1+1)+1)/2)*2
-        let c = Math.floor((Math.random()*(19-1+1)+1)/2)*2
-        setfood({rows: r, cols: c})
+        let tempfood = {rows: 0, cols: 0}
+
+        const check = (pos) => {
+            return pos.rows === tempfood.rows && pos.cols === tempfood.cols
+        }
+
+        do {
+            let r = Math.floor((Math.random()*(19-1+1)+1)/2)*2
+            let c = Math.floor((Math.random()*(19-1+1)+1)/2)*2
+            tempfood = {rows: r, cols: c}
+            
+        } while (snake.find(check) !== undefined);
+        
+        setfood(tempfood)
     }
+
 
     const renders = async () => {
         await renderGrid()
         setGrid(grid)
     }
 
-    const movement = () => {
+    const movement = async() => {
         let tempHead = snakeHead
         let tempbod = snake
         let newbod = []
@@ -118,30 +132,57 @@ const GridItems = ({setScore, score}) => {
             if(speed.current !== 50){
                 speed.current -= 5
             }
-            randFoodPos()
+            await randFoodPos()
+        }else if(checkGameOver(newHead)){
+            setDirection('')
+            return
         }else{
             newbod.pop()
         }
         
         setSnakeHead(newHead)
         setSnake(newbod)
-        renders()
+        // renders()
+    }
+
+    const checkGameOver = (newhead) => {
+        const sideHit = (pos) => {
+            return pos.cols < 0 || pos.cols > 19 || pos.rows < 0 || pos.row > 19
+        }
+
+        const outOfBounds = Grid.filter(sideHit)
+
+
+        const bodyHit = (pos) => {
+            return pos.cols === newhead.cols && pos.rows === newhead.rows
+        }
+
+        if(snake.filter(bodyHit).length > 1){
+            return true
+        }
+        else if(outOfBounds.filter(bodyHit).length > 0){
+            return true
+        }
+
+        return false
+        
     }
 
     const onKeys = (e) => {
 
         const moves = {
-            38: 'up',
-            39: 'right',
-            40: 'down',
-            37: 'left',
+            38: direction !== 'down' && 'up' ,
+            39: direction !== 'left' && 'right',
+            40: direction !== 'up' && 'down',
+            37: direction !== 'right' && 'left',
         }
 
-        setDirection(moves[e.keyCode])
+        moves[e.keyCode] != 0 && setDirection(moves[e.keyCode])
     }
 
     
     useEffect(() => {
+        renders()
         document.addEventListener('keydown', onKeys);
         const interval = setInterval(() => movement(), speed.current)
         return () => clearInterval(interval)
@@ -150,7 +191,7 @@ const GridItems = ({setScore, score}) => {
     return Grid.map((block, i) => {
         return (
             <div key={i.toString()} className='grid-item'>
-                {snakeBody(block) ? <Snake head={block === snakeHead && true}/> : null}
+                {snakeBody(block) ? <Snake head={block.cols === snakeHead.cols & block.rows === snakeHead.rows && true}/> : null}
                 {placeFood(block) ? <Food/> : null }
             </div>
         )
