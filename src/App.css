@@ -92,16 +92,16 @@
 
 .dir-buttons {
   display: grid;
-  grid-template-columns: repeat(3, calc(34vw/3));
-  grid-template-rows: repeat(2, calc(34vw/3));
+  grid-template-columns: repeat(3, calc(38vw/3));
+  grid-template-rows: repeat(2, calc(38vw/3));
   column-width: calc(50vw/3);
   width: calc(50vw/3);
   background-color: #adadad81;
   border-top-left-radius: 50%;
   border-top-right-radius: 50%;
   border-bottom-left-radius: 50%;
-  width: 40vw;
-  height: 40vw;
+  width: 45vw;
+  height: 45vw;
   align-items: center;
   position: fixed;
   bottom: -11vw;
@@ -114,7 +114,7 @@
 
 .dir-arrows{
   margin: auto;
-  width: 10vw;
+  width: 12vw;
 }
 
 .dir-arrows:first-child {
