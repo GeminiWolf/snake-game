@@ -92,8 +92,8 @@
 
 .dir-buttons {
   display: grid;
-  grid-template-columns: repeat(3, calc(22vw/3));
-  grid-template-rows: repeat(2, calc(22vw/3));
+  grid-template-columns: repeat(3, calc(34vw/3));
+  grid-template-rows: repeat(2, calc(34vw/3));
   column-width: calc(50vw/3);
   width: calc(50vw/3);
   background-color: #adadad81;
@@ -114,7 +114,7 @@
 
 .dir-arrows{
   margin: auto;
-  width: 11vw;
+  width: 10vw;
 }
 
 .dir-arrows:first-child {
