@@ -38,7 +38,7 @@
 .modal-opt-fonts {
   width: 100%;
   color: #f5f5f5;
-  font-size: 35;
+  font-size: 35px;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -131,9 +131,13 @@
     justify-content: flex-start;
     padding-top: 20px;
   }
+
+  .modal-opts{
+    background-color: #000;
+  }
   
   .modal-action-font {
-    font-size: 20px;
+    font-size: 25px;
   }
   
   .dir-buttons{
