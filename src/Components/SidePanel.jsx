@@ -3,8 +3,7 @@ import React from 'react';
 const SidePanel = ({score, history}) => {
     return (
         <div className='sidepanel'>
-            <h1>Score</h1>
-            <h1>{score}</h1>
+            {/* <img alt='hitsBack' className='history-back-btn'/> */}
             <div className='history'>
                 {history.current.map((h) => {
                     return (

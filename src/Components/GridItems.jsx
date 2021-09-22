@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import React, { useEffect, useRef, useState } from 'react';
+import DirectionalBtns from './DirectionalBtns';
 import Food from './Food';
 import Snake from './Snake';
 
@@ -7,7 +8,7 @@ let x = Math.floor((Math.random()*(19-1+1)+1)/2)*2
 let y = Math.floor((Math.random()*(19-1+1)+1)/2)*2
 const startPos = {rows: 20/2 -1, cols: 20/2 -1}
 
-const GridItems = ({setScore, score}) => {
+const GridItems = ({setScore, score, action, playOptions, }) => {
     const [snakeHead, setSnakeHead] = useState(startPos)
     const [food, setfood] = useState({rows: x, cols: y})
     const [snake, setSnake] = useState([snakeHead])
@@ -80,43 +81,45 @@ const GridItems = ({setScore, score}) => {
         let tempbod = snake
         let newbod = []
         let newHead = {rows: 0,cols: 0}
+        let gOver = false
+        var Mv = direction
 
-        switch (direction) {
+        switch (Mv) {
             case "":
                 return;
             case "up":
-                if(tempHead.rows < 0){
-                    newHead.rows = 19;
+                if(tempHead.rows >= 0){
+                    newHead.rows = tempHead.rows - 1;
                 }
                 else{
-                    newHead.rows = tempHead.rows - 1;
+                    newHead.rows = 19;
                 }
                 newHead.cols = tempHead.cols;
                 break;
             case "right":
-                if(tempHead.cols > 19){
-                    newHead.cols = 0;
+                if(tempHead.cols <= 19){
+                    newHead.cols = tempHead.cols + 1;
                 }
                 else{
-                    newHead.cols = tempHead.cols + 1;
+                    newHead.cols = 0;
                 }
                 newHead.rows = tempHead.rows;
                 break;
                 case "down":
-                    if(tempHead.rows > 19){
-                        newHead.rows = 0;
+                    if(tempHead.rows <= 19){
+                        newHead.rows = tempHead.rows + 1;
                     }
                     else{
-                        newHead.rows = tempHead.rows + 1;
+                        newHead.rows = 0;
                     }
                     newHead.cols = tempHead.cols;
                     break;
             case "left":
-                if(tempHead.cols < 0){
-                    newHead.cols = 19;
+                if(tempHead.cols >= 0){
+                    newHead.cols = tempHead.cols - 1;
                 }
                 else{
-                    newHead.cols = tempHead.cols - 1;
+                    newHead.cols = 19;
                 }
                 newHead.rows = tempHead.rows;
                 break;
@@ -126,6 +129,9 @@ const GridItems = ({setScore, score}) => {
 
         newbod = [newHead, ...tempbod]
 
+
+        gOver = checkGameOver(newHead)
+
         if(food.cols === newHead.cols && food.rows === newHead.rows)
         {
             setScore(score + 100)
@@ -133,7 +139,7 @@ const GridItems = ({setScore, score}) => {
                 speed.current -= 5
             }
             await randFoodPos()
-        }else if(checkGameOver(newHead)){
+        }else if(gOver){
             setDirection('')
             return
         }else{
@@ -150,34 +156,55 @@ const GridItems = ({setScore, score}) => {
             return pos.cols < 0 || pos.cols > 19 || pos.rows < 0 || pos.row > 19
         }
 
-        const outOfBounds = Grid.filter(sideHit)
-
-
         const bodyHit = (pos) => {
             return pos.cols === newhead.cols && pos.rows === newhead.rows
         }
 
-        if(snake.filter(bodyHit).length > 1){
+        const outOfBounds = Grid.filter(sideHit)
+        const bhit = snake.findIndex(bodyHit)
+
+        if(newhead.cols < 0 || newhead.cols > 19 || newhead.rows < 0 || newhead.rows > 19){
+            // addHistory()
+            resetGame()
+            playOptions('4')
+            return true
+        }
+        else if(bhit !== -1){
+            resetGame()
+            playOptions('4')
             return true
         }
         else if(outOfBounds.filter(bodyHit).length > 0){
+            resetGame()
+            playOptions('4')
             return true
         }
 
         return false
-        
     }
 
     const onKeys = (e) => {
-
+        const od = direction
+        
         const moves = {
-            38: direction !== 'down' && 'up' ,
-            39: direction !== 'left' && 'right',
-            40: direction !== 'up' && 'down',
-            37: direction !== 'right' && 'left',
+            38: 'up',
+            39: 'right',
+            40: 'down',
+            37: 'left',
         }
+        
+        const newDir = moves[e.keyCode]
+        
+        if(action === 'Playing'){
+            setDirection(newDir)
+        }
+    }
 
-        moves[e.keyCode] != 0 && setDirection(moves[e.keyCode])
+    const resetGame = () => {
+        setSnakeHead(startPos)
+        setSnake([startPos])
+        setScore(0)
+        randFoodPos()
     }
 
     
@@ -186,17 +213,21 @@ const GridItems = ({setScore, score}) => {
         document.addEventListener('keydown', onKeys);
         const interval = setInterval(() => movement(), speed.current)
         return () => clearInterval(interval)
-    }, [direction, snake])
+    }, [direction, snake, action])
 
-    return Grid.map((block, i) => {
-        return (
-            <div key={i.toString()} className='grid-item'>
-                {snakeBody(block) ? <Snake head={block.cols === snakeHead.cols & block.rows === snakeHead.rows && true}/> : null}
-                {placeFood(block) ? <Food/> : null }
-            </div>
-        )
-    })
-    
+    return (
+        <>
+           { Grid.map((block, i) => {
+                return (
+                    <div key={i.toString()} className='grid-item'>
+                        {snakeBody(block) ? <Snake head={block.cols === snakeHead.cols & block.rows === snakeHead.rows && true}/> : null}
+                        {placeFood(block) ? <Food/> : null }
+                    </div>
+                )
+            })}
+            <DirectionalBtns setDirection={setDirection} />
+        </>
+    )
 }
 
 export default GridItems;

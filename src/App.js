@@ -7,18 +7,19 @@ import OverlayScreen from './Components/OverlayScreen';
 
 const App = () => {
   const [score, setScore] = useState(0)
-  const [action, setAction] = useState('in-game')
+  const [action, setAction] = useState('Game')
   const history = useRef([])
   const [name, setName] = useState('')
 
-  const playOptions = (opt) => {
+  const playOptions =  (opt) => {
     const options = {
-      'Play': 'ev',
-      'Pause': 'ev',
-      'Game Over': 'ev',
+      '1': 'Game',
+      '2': 'Playing',
+      '3': 'Pause',
+      '4': 'Game Over',
     }
 
-    setAction(options[opt])
+    setAction( options[opt]) 
   }
 
   const addHistory = () =>{
@@ -27,10 +28,26 @@ const App = () => {
   
   return (
     <div className='app' >
-      <SidePanel score={score} history={history} />
-      {action !== 'Play' && <OverlayScreen playOptions={playOptions} setName={setName} />}
+      {
+        action !== 'Playing' && 
+        <OverlayScreen 
+          playOptions={playOptions} 
+          setName={setName} 
+          history={history} 
+          action={action} 
+          setAction={setAction}/>
+      }
+      <div>
+        <h1 style={{textAlign: 'center'}}>Score</h1>
+        <h1 style={{textAlign: 'center'}}>{score}</h1>
+      </div>
       <div className='grid'>
-        <GridItems score={score} setScore={setScore} done={addHistory} playOptions={playOptions}/>
+        <GridItems
+          score={score}
+          setScore={setScore}
+          addHistory={addHistory}
+          action={action}
+          playOptions={playOptions}/>
       </div>
     </div>
   );
