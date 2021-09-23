@@ -226,7 +226,7 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
                     </div>
                 )
             })}
-            <DirectionalBtns setDirection={setDirection} onKeys={onKeys}/>
+            <DirectionalBtns action={action} onKeys={onKeys}/>
         </>
     )
 }

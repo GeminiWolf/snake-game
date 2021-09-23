@@ -7,15 +7,25 @@ const dirIcons = {
     'right': 'https://img.icons8.com/pastel-glyph/64/000000/circled-chevron-right.png',
 }
 
-const DirectionalBtns = ({setDirection, onKeys}) => {
+const DirectionalBtns = ({action, onKeys}) => {
+
+    const btnMovements = (d) => {
+
+        const dObj = {keyCode: d}
+
+        // if(action === 'Playing'){
+            onKeys(dObj)
+        // }
+    }
+    
     return (
         <div>
             {/* <div>Side</div> */}
             <div className='dir-buttons'>
-                <img alt='dirs' onClick={() => onKeys('up')} className='dir-arrows' src={dirIcons['up']} />
-                <img alt='dirs' onClick={() => onKeys('left')} className='dir-arrows' src={dirIcons['left']} />
-                <img alt='dirs' onClick={() => onKeys('down')} className='dir-arrows' src={dirIcons['down']} />
-                <img alt='dirs' onClick={() => onKeys('right')} className='dir-arrows' src={dirIcons['right']} />
+                <img alt='dirs' onClick={() => btnMovements('up')} className='dir-arrows' src={dirIcons['up']} />
+                <img alt='dirs' onClick={() => btnMovements('left')} className='dir-arrows' src={dirIcons['left']} />
+                <img alt='dirs' onClick={() => btnMovements('down')} className='dir-arrows' src={dirIcons['down']} />
+                <img alt='dirs' onClick={() => btnMovements('right')} className='dir-arrows' src={dirIcons['right']} />
             </div>
         </div>
     );
