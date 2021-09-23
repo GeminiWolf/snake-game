@@ -22,10 +22,10 @@ const DirectionalBtns = ({action, onKeys}) => {
         <div>
             {/* <div>Side</div> */}
             <div className='dir-buttons'>
-                <img alt='dirs' onClick={() => btnMovements('up')} className='dir-arrows' src={dirIcons['up']} />
-                <img alt='dirs' onClick={() => btnMovements('left')} className='dir-arrows' src={dirIcons['left']} />
-                <img alt='dirs' onClick={() => btnMovements('down')} className='dir-arrows' src={dirIcons['down']} />
-                <img alt='dirs' onClick={() => btnMovements('right')} className='dir-arrows' src={dirIcons['right']} />
+                <img alt='dirs' onClick={() => btnMovements(38)} className='dir-arrows' src={dirIcons['up']} />
+                <img alt='dirs' onClick={() => btnMovements(37)} className='dir-arrows' src={dirIcons['left']} />
+                <img alt='dirs' onClick={() => btnMovements(40)} className='dir-arrows' src={dirIcons['down']} />
+                <img alt='dirs' onClick={() => btnMovements(39)} className='dir-arrows' src={dirIcons['right']} />
             </div>
         </div>
     );
