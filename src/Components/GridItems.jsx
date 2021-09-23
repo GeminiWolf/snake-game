@@ -193,7 +193,7 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
             37: 'left',
         }
         
-        const newDir = moves[e.keyCode]
+        const newDir = moves[e.keyCode || e]
         
         if(action === 'Playing'){
             setDirection(newDir)
@@ -203,6 +203,7 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
     const resetGame = () => {
         setSnakeHead(startPos)
         setSnake([startPos])
+        speed.current = 400;
         setScore(0)
         randFoodPos()
     }
@@ -225,7 +226,7 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
                     </div>
                 )
             })}
-            <DirectionalBtns setDirection={setDirection} />
+            <DirectionalBtns setDirection={setDirection} onKeys={onKeys}/>
         </>
     )
 }
