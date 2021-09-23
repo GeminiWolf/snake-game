@@ -193,7 +193,7 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
             37: 'left',
         }
         
-        const newDir = moves[e.keyCode || e]
+        const newDir = moves[e.keyCode]
         
         if(action === 'Playing'){
             setDirection(newDir)
