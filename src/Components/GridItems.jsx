@@ -1,18 +1,16 @@
-import { render } from '@testing-library/react';
 import React, { useEffect, useRef, useState } from 'react';
 import DirectionalBtns from './DirectionalBtns';
 import Food from './Food';
 import Snake from './Snake';
 
-let x = Math.floor((Math.random()*(19-1+1)+1)/2)*2
-let y = Math.floor((Math.random()*(19-1+1)+1)/2)*2
 const startPos = {rows: 20/2 -1, cols: 20/2 -1}
 
-const GridItems = ({setScore, score, action, playOptions, }) => {
+const GridItems = ({setScore, score, action, playOptions, addHistory}) => {
     const [snakeHead, setSnakeHead] = useState(startPos)
-    const [food, setfood] = useState({rows: x, cols: y})
+    const [food, setfood] = useState({rows: Math.floor(Math.random()*20), cols: Math.floor(Math.random()*20)})
     const [snake, setSnake] = useState([snakeHead])
     const [direction, setDirection] = useState('')
+    const directionRef = useRef('')
     const blocks = useRef({rows: 20,cols: 20})
     const [Grid, setGrid] = useState([])
     const speed = useRef(400)
@@ -61,8 +59,8 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
         }
 
         do {
-            let r = Math.floor((Math.random()*(19-1+1)+1)/2)*2
-            let c = Math.floor((Math.random()*(19-1+1)+1)/2)*2
+            let r = Math.floor(Math.random()*20)
+            let c = Math.floor(Math.random()*20)
             tempfood = {rows: r, cols: c}
             
         } while (snake.find(check) !== undefined);
@@ -71,56 +69,36 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
     }
 
 
-    const renders = async () => {
-        await renderGrid()
+    const renders = () => {
+        renderGrid()
         setGrid(grid)
     }
 
-    const movement = async() => {
+    const movement = () => {
         let tempHead = snakeHead
         let tempbod = snake
         let newbod = []
         let newHead = {rows: 0,cols: 0}
         let gOver = false
-        var Mv = direction
+        var Mv = directionRef.current
 
         switch (Mv) {
             case "":
                 return;
             case "up":
-                if(tempHead.rows >= 0){
-                    newHead.rows = tempHead.rows - 1;
-                }
-                else{
-                    newHead.rows = 19;
-                }
+                newHead.rows = tempHead.rows - 1;
                 newHead.cols = tempHead.cols;
                 break;
             case "right":
-                if(tempHead.cols <= 19){
-                    newHead.cols = tempHead.cols + 1;
-                }
-                else{
-                    newHead.cols = 0;
-                }
+                newHead.cols = tempHead.cols + 1;
                 newHead.rows = tempHead.rows;
                 break;
-                case "down":
-                    if(tempHead.rows <= 19){
-                        newHead.rows = tempHead.rows + 1;
-                    }
-                    else{
-                        newHead.rows = 0;
-                    }
-                    newHead.cols = tempHead.cols;
-                    break;
+            case "down":
+                newHead.rows = tempHead.rows + 1;
+                newHead.cols = tempHead.cols;
+                break;
             case "left":
-                if(tempHead.cols >= 0){
-                    newHead.cols = tempHead.cols - 1;
-                }
-                else{
-                    newHead.cols = 19;
-                }
+                newHead.cols = tempHead.cols - 1;
                 newHead.rows = tempHead.rows;
                 break;
             default:
@@ -128,7 +106,6 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
         }
 
         newbod = [newHead, ...tempbod]
-
 
         gOver = checkGameOver(newHead)
 
@@ -138,9 +115,11 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
             if(speed.current !== 50){
                 speed.current -= 5
             }
-            await randFoodPos()
+            randFoodPos()
         }else if(gOver){
+            addHistory()
             setDirection('')
+            directionRef.current = ''
             return
         }else{
             newbod.pop()
@@ -148,23 +127,16 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
         
         setSnakeHead(newHead)
         setSnake(newbod)
-        // renders()
     }
 
     const checkGameOver = (newhead) => {
-        const sideHit = (pos) => {
-            return pos.cols < 0 || pos.cols > 19 || pos.rows < 0 || pos.row > 19
-        }
-
         const bodyHit = (pos) => {
             return pos.cols === newhead.cols && pos.rows === newhead.rows
         }
 
-        const outOfBounds = Grid.filter(sideHit)
         const bhit = snake.findIndex(bodyHit)
 
         if(newhead.cols < 0 || newhead.cols > 19 || newhead.rows < 0 || newhead.rows > 19){
-            // addHistory()
             resetGame()
             playOptions('4')
             return true
@@ -174,29 +146,42 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
             playOptions('4')
             return true
         }
-        else if(outOfBounds.filter(bodyHit).length > 0){
-            resetGame()
-            playOptions('4')
-            return true
-        }
 
         return false
     }
 
     const onKeys = (e) => {
-        const od = direction
+        const od = directionRef.current
         
         const moves = {
-            38: 'up',
-            39: 'right',
-            40: 'down',
-            37: 'left',
+            'ArrowUp': 'up',
+            'ArrowRight': 'right',
+            'ArrowDown': 'down',
+            'ArrowLeft': 'left',
+            'w': 'up',
+            'W': 'up',
+            'd': 'right',
+            'D': 'right',
+            's': 'down',
+            'S': 'down',
+            'a': 'left',
+            'A': 'left',
         }
         
-        const newDir = moves[e.keyCode]
+        const newDir = moves[e.key]
         
-        if(action === 'Playing'){
-            setDirection(newDir)
+        if(action === 'Playing' && newDir){
+            const opposites = {
+                'up': 'down',
+                'down': 'up',
+                'left': 'right',
+                'right': 'left',
+            }
+            
+            if(opposites[newDir] !== od && (od !== '' || snake.length === 1)){
+                setDirection(newDir)
+                directionRef.current = newDir
+            }
         }
     }
 
@@ -205,23 +190,35 @@ const GridItems = ({setScore, score, action, playOptions, }) => {
         setSnake([startPos])
         speed.current = 400;
         setScore(0)
+        setDirection('')
+        directionRef.current = ''
         randFoodPos()
     }
 
     
     useEffect(() => {
         renders()
-        document.addEventListener('keydown', onKeys);
-        const interval = setInterval(() => movement(), speed.current)
-        return () => clearInterval(interval)
-    }, [direction, snake, action])
+    }, [])
+
+    useEffect(() => {
+        const handleKeyDown = (e) => onKeys(e);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown)
+    }, [action, snake])
+
+    useEffect(() => {
+        if(action === 'Playing' && direction !== ''){
+            const interval = setInterval(() => movement(), speed.current)
+            return () => clearInterval(interval)
+        }
+    }, [direction, snake, action, food, score])
 
     return (
         <>
            { Grid.map((block, i) => {
                 return (
                     <div key={i.toString()} className='grid-item'>
-                        {snakeBody(block) ? <Snake head={block.cols === snakeHead.cols & block.rows === snakeHead.rows && true}/> : null}
+                        {snakeBody(block) ? <Snake head={block.cols === snakeHead.cols && block.rows === snakeHead.rows && true}/> : null}
                         {placeFood(block) ? <Food/> : null }
                     </div>
                 )

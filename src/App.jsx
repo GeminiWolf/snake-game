@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import GridItems from './Components/GridItems';
 import SidePanel from './Components/SidePanel';
 
@@ -10,6 +10,13 @@ const App = () => {
   const [action, setAction] = useState('Game')
   const history = useRef([])
   const [name, setName] = useState('')
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('snakeHighScores')
+    if(savedHistory){
+      history.current = JSON.parse(savedHistory)
+    }
+  }, [])
 
   const playOptions =  (opt) => {
     const options = {
@@ -23,7 +30,10 @@ const App = () => {
   }
 
   const addHistory = () =>{
-    history.current.push({player: name, highscore: score })
+    history.current.push({player: name || 'Anonymous', highscore: score })
+    history.current.sort((a, b) => b.highscore - a.highscore)
+    history.current = history.current.slice(0, 10)
+    localStorage.setItem('snakeHighScores', JSON.stringify(history.current))
   }
   
   return (
@@ -49,6 +59,7 @@ const App = () => {
           action={action}
           playOptions={playOptions}/>
       </div>
+      <SidePanel score={score} history={history}/>
     </div>
   );
 }
